@@ -32,5 +32,7 @@ This endpoint returns the schedule of today.
 Parameters: 
 * `block` (optional): Get timings for a time block in today's schedule. Example: `p1` for period one.
 
+---------------
+
 ### `/current/period`
 This endpoint provides data for the current period.
