@@ -1,6 +1,7 @@
 import flask
 from datetimerange import DateTimeRange
 from datetime import date
+import calendar
 from json import loads
 
 app = flask.Flask(__name__)
@@ -63,12 +64,14 @@ def day(day):
         ).read()
     )[day]
 
-    param = flask.request.args.get('block')
+    block = flask.request.args.get('block')
 
-    if param != None:
+    if block != None:
         try:
             res = {
-                'data': data[param]
+                'data': {
+                    block: data[block]
+                }
             }
         except KeyError:
             res = {
@@ -95,6 +98,23 @@ def time(day, time):
     return({
         'data': None
     })
-            
+
+@app.route('/current/schedule')
+def current_schedule():
+    res = get_schedule(
+        day=calendar.day_name[date.today().weekday()].lower()
+    )
+    block = flask.request.args.get('block')
+    if block == None:
+        return({
+            'data': res
+        })
+    else:
+        return({
+            'data': {
+                block: res[block]
+            }
+        })
+
 
 app.run(debug=True)

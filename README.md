@@ -16,4 +16,9 @@ Parameters:
 * `block` (optional): Get timings for a time block in the day's schedule. Example: `p1` for period one.
 
 ### `/day/<day>/time/<time>`
-This endpoint returns the period for a given time and day. For example, if you wanted to know what period is at 9:30 on Monday, you could make a request to `/day/monday/time/09:30`.
+This endpoint returns the period for a given time and day. For example, if you wanted to know what period is at 9:30 on Monday, you could make a request to `/day/monday/time/09:30`
+
+## `/current/schedule`
+This endpoint returns the schedule of today.
+Parameters: 
+* `block` (optional): Get timings for a time block in today's schedule. Example: `p1` for period one.
