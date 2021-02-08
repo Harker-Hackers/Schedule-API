@@ -6,6 +6,8 @@ We were making a project ourselves that needed the bell schedule in JSON format,
 
 ## API Refrence
 
+**Base URL**: https://harker-schedule.herokuapp.com/v1
+
 ---------------
 
 ### `/all`
@@ -23,16 +25,18 @@ Parameters:
 ---------------
 
 ### `/day/<day>/time/<time>`
-This endpoint returns the period for a given time and day. For example, if you wanted to know what period is at 9:30 on Monday, you could make a request to `/day/monday/time/09:30`.
+This endpoint returns the period for a given time and day. For example, if you wanted to know what period is at 9:30 on Monday, you could make a request to `/day/monday/time/09:30`. \
+Does not include passing periods (#2).
 
 ---------------
 
 ### `/current/schedule`
-This endpoint returns the schedule of today.
+This endpoint returns the schedule of today. \
 Parameters: 
 * `block` (optional): Get timings for a time block in today's schedule. Example: `p1` for period one.
 
 ---------------
 
 ### `/current/period`
-This endpoint provides data for the current period.
+This endpoint provides data for the current period. \
+Does not include passing periods (#2).

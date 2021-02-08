@@ -4,6 +4,7 @@ from datetime import date
 from time import localtime, strftime
 import calendar
 from json import loads
+from os import getenv
 
 app = flask.Flask(__name__)
 
@@ -27,7 +28,7 @@ def check_range(block, day, to_verify):
     time_range = DateTimeRange(f"{today}T{start}:00+0800", f"{today}T{end}:00+0800")
     return(f"{today}T{to_verify}:00+0800" in time_range)
 
-@app.route('/all')
+@app.route('/v1/all')
 def all():
     '''
     This endpoint returns the schedule for Monday - Friday.
@@ -51,7 +52,7 @@ def all():
     return(res)
         
 
-@app.route('/day/<day>')
+@app.route('/v1/day/<day>')
 def day(day):
     '''
     This endpoint returns the schedule for a day.
@@ -89,8 +90,11 @@ def day(day):
 
     return(res)
 
-@app.route('/day/<day>/time/<time>')
+@app.route('/v1/day/<day>/time/<time>')
 def time(day, time):
+    '''
+    This endpoint returns the period for a given time and day.
+    '''
     schedule = get_schedule(day=day)
     del schedule['passing_periods']
     for block in schedule:
@@ -104,8 +108,13 @@ def time(day, time):
         'data': None
     })
 
-@app.route('/current/schedule')
+@app.route('/v1/current/schedule')
 def current_schedule():
+    '''
+    This endpoint returns the schedule of today. 
+    Optional parameters:
+        - 'block' (optional): Get timings for a time block in today's schedule. Example: p1 for period one.
+    '''
     try:
         res = get_schedule(
             day=calendar.day_name[date.today().weekday()].lower()
@@ -127,8 +136,11 @@ def current_schedule():
             }
         })
 
-@app.route('/current/period')
+@app.route('/v1/current/period')
 def current_period():
+    '''
+    This endpoint provides data for the current period.
+    '''
     day = calendar.day_name[date.today().weekday()].lower()
     schedule = get_schedule(
         day=day
@@ -148,3 +160,6 @@ def current_period():
     return({
         'data': None
     })
+
+if getenv('ENV') == 'test':
+    app.run(debug=True)
