@@ -18,7 +18,7 @@ jobs:
             -
                 name: Test main.py
                 run: |
-                    python3 main.py test
+                    python3 main.py
             -
                 name: Verify schedule.json
                 run: |
