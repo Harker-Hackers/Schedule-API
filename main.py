@@ -57,4 +57,5 @@ def day(day):
         }
 
     return(res)
-app.run(debug=True)
+    
+app.run()
