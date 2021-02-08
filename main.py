@@ -1,6 +1,7 @@
 import flask
 from datetimerange import DateTimeRange
 from datetime import date
+from time import localtime, strftime
 import calendar
 from json import loads
 
@@ -24,7 +25,6 @@ def check_range(block, day, to_verify):
     start = block_timings['start']
     end = block_timings['end']
     time_range = DateTimeRange(f"{today}T{start}:00+0800", f"{today}T{end}:00+0800")
-    print(f"{today}T{to_verify}:00+0800" in time_range)
     return(f"{today}T{to_verify}:00+0800" in time_range)
 
 @app.route('/all')
@@ -58,11 +58,16 @@ def day(day):
     Optional parameters: 
         - 'block': Get timings for a time block in the day's schedule.
     '''
-    data = loads(
-        open(
-            'schedule.json', 'r'
-        ).read()
-    )[day]
+    try:
+        data = loads(
+            open(
+                'schedule.json', 'r'
+            ).read()
+        )[day]
+    except KeyError:
+        return({
+            'data': None
+        })
 
     block = flask.request.args.get('block')
 
@@ -101,9 +106,15 @@ def time(day, time):
 
 @app.route('/current/schedule')
 def current_schedule():
-    res = get_schedule(
-        day=calendar.day_name[date.today().weekday()].lower()
-    )
+    try:
+        res = get_schedule(
+            day=calendar.day_name[date.today().weekday()].lower()
+        )
+    except KeyError:
+        return({
+            'data': None
+        })
+
     block = flask.request.args.get('block')
     if block == None:
         return({
@@ -116,5 +127,26 @@ def current_schedule():
             }
         })
 
+@app.route('/current/period')
+def current_period():
+    day = calendar.day_name[date.today().weekday()].lower()
+    schedule = get_schedule(
+        day=day
+    )
+    del schedule['passing_periods']
+    for block in schedule:
+        if check_range(
+            block, 
+            day, 
+            strftime('%H:%M', localtime())
+        ):
+            return({
+                'data': {
+                    block: schedule[block]
+                }
+            })
+    return({
+        'data': None
+    })
 
 app.run(debug=True)
