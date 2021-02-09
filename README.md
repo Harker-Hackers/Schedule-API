@@ -25,8 +25,7 @@ Parameters:
 ---------------
 
 ### `/day/<day>/time/<time>`
-This endpoint returns the period for a given time and day. For example, if you wanted to know what period is at 9:30 on Monday, you could make a request to `/day/monday/time/09:30`. \
-Does not include passing periods ([#2](https://github.com/Harker-Hackers/Schedule-API/issues/2)).
+This endpoint returns the period for a given time and day. For example, if you wanted to know what period is at 9:30 on Monday, you could make a request to `/day/monday/time/09:30`.
 
 ---------------
 
@@ -37,6 +36,5 @@ Parameters:
 
 ---------------
 
-### `/current/period`
-This endpoint provides data for the current period. \
-Does not include passing periods ([#2](https://github.com/Harker-Hackers/Schedule-API/issues/2)).
+### `/current/block`
+This endpoint provides data for the current block. 
