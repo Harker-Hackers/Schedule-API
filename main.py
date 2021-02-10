@@ -1,6 +1,6 @@
 import flask
 from datetimerange import DateTimeRange
-from datetime import date
+from datetime import date, datetime
 from time import localtime, strftime
 import calendar
 from json import loads
@@ -23,19 +23,30 @@ def get_schedule(day=None):
 def check_range(block, day, to_verify):
     today = str(date.today())
     block_timings = get_schedule(day)[block]
-    if block != 'passing_periods':
+    if block != 'passing_period':
+        print(block_timings)
         start = block_timings['start']
         end = block_timings['end']
         time_range = DateTimeRange(f'{today}T{start}:00+0800', f'{today}T{end}:00+0800')
-        return(f'{today}T{to_verify}:00+0800' in time_range)
+        return(f'{today}T{to_verify}:00+0800' in time_range, None)
     else:
+        print('ass')
         for passing_per in block_timings:
             start = passing_per['start']
             end = passing_per['end']
             time_range = DateTimeRange(f'{today}T{start}:00+0800', f'{today}T{end}:00+0800')
             if f'{today}T{to_verify}:00+0800' in time_range:
-                return(True)
-        return(None)
+                return(True, block_timings.index(passing_per))
+        return(None, None)
+
+def find_delta(start, end):
+    format = '%H:%M'
+    delta = str(
+        datetime.strptime(end, format) - datetime.strptime(start, format)
+    )
+    if len(delta[delta.index(':')]) == 1:
+        delta = '0' + delta
+    return(delta)
 
 @app.route('/v1/all')
 def all():
@@ -90,7 +101,7 @@ def day(day):
             }
         except KeyError:
             res = {
-                'message': 'Time block not found.'
+                'data': None
             }
     else:
         res = {
@@ -106,12 +117,21 @@ def time(day, time):
     '''
     schedule = get_schedule(day=day)
     for block in schedule:
-        if check_range(block, day, time):
-            return({
-                'data': {
-                    block: schedule[block]
-                }
-            })
+        if block != 'passing_period':
+            if check_range(block, day, time)[0]:
+                return({
+                    'data': {
+                        block: schedule[block]
+                    }
+                })
+        else:
+            xcheck_range = check_range(block, day, time)
+            if xcheck_range[0]:
+                return({
+                    'data': {
+                        block: schedule[block][xcheck_range[1]]
+                    }
+                })
     return({
         'data': None
     })
@@ -154,17 +174,37 @@ def current_block():
         day=day
     )
     for block in schedule:
-        if block != 'passing_periods':
-            if check_range(
+        _range = check_range(
                 block, 
                 day, 
                 strftime('%H:%M', localtime())
-            ):
+        )
+        if _range[0]:
+            if block != 'passing_period':
                 return({
                     'data': {
-                        block: schedule[block]
+                        block: schedule[block],
+                        'time_left': find_delta(
+                            strftime(
+                                '%H:%M', 
+                                localtime()
+                            ), schedule[block]['end']
+                        )[:-3]
                     }
                 })
+            else:
+                return({
+                    'data': {
+                        'passing_period': schedule['passing_period'][_range[1]],
+                        'time_left': find_delta(
+                            strftime(
+                                '%H:%M', 
+                                localtime()
+                            ), schedule['passing_period'][_range[1]]['end']
+                        )[:-3]
+                    }
+                })
+
     return({
         'data': None
     })

@@ -38,3 +38,9 @@ Parameters:
 
 ### `/current/block`
 This endpoint provides data for the current block. 
+
+---------------
+
+## Warnings and info
+
+If an endpoint returns `{"data": None}`, it means there are no results. This can happen when you try to get the schedule of Saturday, or get the current period after school is over.

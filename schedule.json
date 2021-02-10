@@ -48,7 +48,7 @@
             "start": "15:05",
             "end": "15:35"
         },
-        "passing_periods": [
+        "passing_period": [
             {
                 "start": "08:47",
                 "end": "08:52"
@@ -128,7 +128,7 @@
             "start": "15:05",
             "end": "15:35"
         },
-        "passing_periods": [
+        "passing_period": [
             {
                 "start": "08:47",
                 "end": "08:52"
@@ -204,7 +204,7 @@
             "start": "14:23",
             "end": "15:05"
         },
-        "passing_periods": [
+        "passing_period": [
             {
                 "start": "09:12",
                 "end": "09:17"
@@ -280,7 +280,7 @@
             "start": "15:05",
             "end": "15:35"
         },
-        "passing_periods": [
+        "passing_period": [
             {
                 "start": "08:47",
                 "end": "08:52"
@@ -360,7 +360,7 @@
             "start": "14:37",
             "end": "15:35"
         },
-        "passing_periods": [
+        "passing_period": [
             {
                 "start": "08:46",
                 "end": "08:51"
