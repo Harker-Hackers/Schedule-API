@@ -5,6 +5,7 @@ from time import localtime, strftime
 import calendar
 from json import loads
 from os import getenv
+from requests import get
 
 app = flask.Flask(__name__)
 
@@ -77,6 +78,8 @@ def day(day):
     Optional parameters: 
         - 'block': Get timings for a time block in the day's schedule.
     '''
+    if day.lower() == 'today':
+        day = calendar.day_name[date.today().weekday()].lower()
     try:
         data = loads(
             open(
@@ -113,6 +116,9 @@ def time(day, time):
     '''
     This endpoint returns the period for a given time and day.
     '''
+    if day == 'today':
+        day = calendar.day_name[date.today().weekday()].lower()
+
     schedule = get_schedule(day=day)
     for block in schedule:
         if block != 'passing_period':
@@ -134,34 +140,6 @@ def time(day, time):
         'data': None
     })
 
-@app.route('/v1/current/schedule')
-def current_schedule():
-    '''
-    This endpoint returns the schedule of today. 
-    Optional parameters:
-        - 'block' (optional): Get timings for a time block in today's schedule. Example: p1 for period one.
-    '''
-    try:
-        res = get_schedule(
-            day=calendar.day_name[date.today().weekday()].lower()
-        )
-    except KeyError:
-        return({
-            'data': None
-        })
-
-    block = flask.request.args.get('block')
-    if block == None:
-        return({
-            'data': res
-        })
-    else:
-        return({
-            'data': {
-                block: res[block]
-            }
-        })
-
 @app.route('/v1/current/block')
 def current_block():
     '''
@@ -172,6 +150,7 @@ def current_block():
         day=day
     )
     for block in schedule:
+        print(strftime('%H:%M', localtime()))
         _range = check_range(
                 block, 
                 day, 
