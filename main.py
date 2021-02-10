@@ -24,13 +24,11 @@ def check_range(block, day, to_verify):
     today = str(date.today())
     block_timings = get_schedule(day)[block]
     if block != 'passing_period':
-        print(block_timings)
         start = block_timings['start']
         end = block_timings['end']
         time_range = DateTimeRange(f'{today}T{start}:00+0800', f'{today}T{end}:00+0800')
         return(f'{today}T{to_verify}:00+0800' in time_range, None)
     else:
-        print('ass')
         for passing_per in block_timings:
             start = passing_per['start']
             end = passing_per['end']
