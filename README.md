@@ -36,4 +36,4 @@ This endpoint provides the current period, start and end times for it, and how m
 
 ## Warnings and info
 
-If an endpoint returns `{"data": None}`, it means there are no results. This can happen when you try to get the schedule of Saturday, or getting the current period after school is over.
+If an endpoint returns `{"data": null}`, it means there are no results. This can happen when you try to get the schedule of a weekend, or after school is over.
