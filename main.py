@@ -17,13 +17,20 @@ def get_schedule(day=None):
         ).read()
     )
     if day:
-        return(schedule[day])
+        try:
+            return(schedule[day])
+        except KeyError:
+            return(None)
     else:
         return(schedule)
 
 def check_range(block, day, to_verify):
     today = str(date.today())
-    block_timings = get_schedule(day)[block]
+    schedule = get_schedule(day)
+    if schedule != None:
+        block_timings = schedule[block]
+    else:
+        return(None, None)
     if block != 'passing_period':
         start = block_timings['start']
         end = block_timings['end']
@@ -120,6 +127,10 @@ def time(day, time):
         day = calendar.day_name[date.today().weekday()].lower()
 
     schedule = get_schedule(day=day)
+    if schedule == (None):
+        return({
+            'data': None
+        })
     for block in schedule:
         if block != 'passing_period':
             if check_range(block, day, time)[0]:
@@ -149,6 +160,10 @@ def current_block():
     schedule = get_schedule(
         day=day
     )
+    if schedule == (None):
+        return({
+            'data': None
+        })
     for block in schedule:
         print(strftime('%H:%M', localtime()))
         _range = check_range(
