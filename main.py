@@ -6,8 +6,10 @@ import calendar
 from json import loads
 from os import getenv
 from requests import get
+from flask_cors import CORS
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, template_folder='.')
+CORS(app)
 
 def get_schedule(day=None):
     schedule = loads(
@@ -200,6 +202,34 @@ def current_block():
     return({
         'data': None
     })
+
+@app.route('/')
+def main():
+    res = current_block()['data']
+    
+    if res != None:
+        time_left = res['time_left']
+        del res['time_left']
+        current_per = list(res.keys())[0]
+        if current_per[0] == 'p':
+            current_per = current_per[-1:]
+            period = 'period'
+        else:
+            period = ''
+        print(time_left)
+        hours = time_left[:time_left.index(':')]
+        minutes = time_left.replace(':', '').replace(hours, '')
+        if hours[0] == '0':
+            hours = hours[-1:]
+        if hours == '0':
+            hours = ''
+        else:
+            hours = hours + ' hours and '
+        print(hours)
+
+        return '{}{} minutes left in {} {}'.format(hours, minutes, period, current_per)
+    else:
+        return('School\'s out!')
 
 if getenv('ENV') == 'test':
     app.run(debug=True)
