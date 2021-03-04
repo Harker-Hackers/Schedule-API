@@ -56,8 +56,8 @@ def find_delta(start, end):
         delta = '0' + delta
     return(delta)
 
-@app.route('/v1/all')
-def all():
+@app.route('/<version>/all')
+def all(version):
     '''
     This endpoint returns the schedule for Monday - Friday.
     Optional parameters: 
@@ -80,8 +80,8 @@ def all():
     return(res)
         
 
-@app.route('/v1/day/<day>')
-def day(day):
+@app.route('/<version>/day/<day>')
+def day(day, version):
     '''
     This endpoint returns the schedule for a day.
     Optional parameters: 
@@ -120,8 +120,8 @@ def day(day):
 
     return(res)
 
-@app.route('/v1/day/<day>/time/<time>')
-def time(day, time):
+@app.route('/<version>/day/<day>/time/<time>')
+def time(day, time, version):
     '''
     This endpoint returns the period for a given time and day.
     '''
@@ -203,6 +203,58 @@ def current_block():
         'data': None
     })
 
+@app.route('/v2/current/block')
+def current_block_2():
+    '''
+    This endpoint provides data for the current block.
+    '''
+    day = calendar.day_name[date.today().weekday()].lower()
+    schedule = get_schedule(
+        day=day
+    )
+    if schedule == (None):
+        return({
+            'data': None
+        })
+    for block in schedule:
+        print(strftime('%H:%M', localtime()))
+        _range = check_range(
+                block, 
+                day, 
+                strftime('%H:%M', localtime())
+        )
+        if _range[0]:
+            if block != 'passing_period':
+                return({
+                    'data': {
+                        'block': block,
+                        'block_timings': schedule[block],
+                        'time_left': find_delta(
+                            strftime(
+                                '%H:%M', 
+                                localtime()
+                            ), schedule[block]['end']
+                        )[:-3]
+                    }
+                })
+            else:
+                return({
+                    'data': {
+                        'block': 'passing_period',
+                        'block_timings': schedule['passing_period'][_range[1]],
+                        'time_left': find_delta(
+                            strftime(
+                                '%H:%M', 
+                                localtime()
+                            ), schedule['passing_period'][_range[1]]['end']
+                        )[:-3]
+                    }
+                })
+
+    return({
+        'data': None
+    })
+
 @app.route('/')
 def main():
     res = current_block()['data']
@@ -230,6 +282,3 @@ def main():
         return '{}{} minutes left in {} {}'.format(hours, minutes, period, current_per)
     else:
         return('School\'s out!')
-
-if getenv('ENV') == 'test':
-    app.run(debug=True)
